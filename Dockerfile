@@ -2,11 +2,16 @@ FROM bitnami/postgresql:16.2.0-debian-12-r18
 
 USER root
 
-# ติดตั้ง build tools และ pgvector
 RUN install_packages \
+      wget \
+      lsb-release \
+      gnupg \
       build-essential \
       git \
-      postgresql-server-dev-16 \
+    && echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list \
+    && wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add - \
+    && apt-get update \
+    && apt-get install -y postgresql-server-dev-16 \
     && git clone --branch v0.7.4 https://github.com/pgvector/pgvector.git /tmp/pgvector \
     && cd /tmp/pgvector \
     && make && make install \
